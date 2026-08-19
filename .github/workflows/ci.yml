@@ -1,0 +1,25 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: {components: rustfmt, clippy}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+      - run: npm install --prefix apps/desktop/web --package-lock-only
+      - run: ./scripts/ci.sh
+  release-smoke:
+    runs-on: ubuntu-24.04
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release -p qdw-node
+      - run: mkdir -p ~/.config/qdw-node && cp config/node.example.toml ~/.config/qdw-node/config.toml
+      - run: ./scripts/benchmark_resources.sh target/release/qdw-node ~/.config/qdw-node/config.toml build/resource-measurement.json
+      - uses: actions/upload-artifact@v4
+        with: {name: resource-measurement, path: build/resource-measurement.json}

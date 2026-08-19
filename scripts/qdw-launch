@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# QDW Workbench — master launcher
+# Starts: qdw-node, QDW bridge, Hermes control interface, desktop app
+# Logs to /tmp/opencode/qdw/
+
+LOG_DIR=/tmp/opencode/qdw
+mkdir -p "$LOG_DIR"
+
+HOME_DIR="/home/box"
+WORKBENCH="$HOME_DIR/qdw-workbench"
+CARGO_TARGET="/root/mangy-cargo-target"
+VENV="$WORKBENCH/.venv"
+QDW_SRC="$WORKBENCH/vendor/qdw/src"
+QDW_DB="$HOME_DIR/.local/share/qdw-workbench/test-qdw.db"
+
+export PYTHONPATH="$QDW_SRC:$PYTHONPATH"
+
+# Kill any existing QDW processes
+echo "[QDW] Stopping existing processes..."
+for name in qdw-node qdw-bridge hermes-control; do
+  pid=$(pgrep -f "$name" 2>/dev/null || true)
+  [ -n "$pid" ] && kill "$pid" 2>/dev/null || true
+done
+sleep 1
+
+# 1. Start qdw-node
+echo "[QDW] Starting qdw-node..."
+setsid nohup "$CARGO_TARGET/release/qdw-node" \
+  --config "$HOME_DIR/.config/qdw-node/config.toml" \
+  >> "$LOG_DIR/node.log" 2>&1 &
+echo $! > "$LOG_DIR/node.pid"
+sleep 1
+
+# 2. Start QDW bridge
+echo "[QDW] Starting QDW bridge..."
+setsid nohup "$VENV/bin/python3" -m qdw_workbench_bridge.cli \
+  --listen 127.0.0.1:9911 \
+  >> "$LOG_DIR/bridge.log" 2>&1 &
+echo $! > "$LOG_DIR/bridge.pid"
+sleep 1
+
+# 3. Start Hermes control interface (web dashboard)
+echo "[QDW] Starting Hermes control interface..."
+cd "$WORKBENCH/vendor/hermes-control-interface"
+setsid nohup node server.js \
+  >> "$LOG_DIR/control.log" 2>&1 &
+echo $! > "$LOG_DIR/control.pid"
+cd "$WORKBENCH"
+
+# 4. Verify services
+echo "[QDW] Verifying services..."
+sleep 1
+node_ok=$(curl -sf http://127.0.0.1:9902/v1/health >/dev/null 2>&1 && echo "OK" || echo "FAIL")
+bridge_ok=$(curl -sf http://127.0.0.1:9911/health >/dev/null 2>&1 && echo "OK" || echo "FAIL")
+echo "[QDW]   qdw-node: $node_ok"
+echo "[QDW]   bridge:   $bridge_ok"
+
+# 5. Launch desktop app
+echo "[QDW] Launching QDW Workbench..."
+exec "$CARGO_TARGET/release/qdw-workbench-desktop" 2>/dev/null &

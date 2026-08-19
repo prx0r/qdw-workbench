@@ -1,0 +1,1 @@
+export function CostPanel(){return <section><h3>Usage</h3><div className="metric-grid"><div className="card"><small>Cash today</small><b>—</b><span>awaiting telemetry</span></div><div className="card"><small>Subscription</small><b>—</b><span>kept separate from USD</span></div><div className="card"><small>Compute</small><b>—</b><span>node ms</span></div></div></section>}

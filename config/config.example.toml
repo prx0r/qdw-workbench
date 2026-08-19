@@ -1,0 +1,19 @@
+qdw_url = "http://127.0.0.1:9911"
+workspaces = [
+  "/home/you/src/qdw",
+  "/home/you/src/gitgoblin",
+  "/home/you/src/dell",
+  "/home/you/src/qdw-forge",
+]
+
+[[nodes]]
+id = "local"
+url = "http://127.0.0.1:9902"
+
+[[nodes]]
+id = "hetzner-a"
+url = "http://127.0.0.1:19021"
+[nodes.ssh]
+host = "qdw-a"
+remote_port = 9902
+local_port = 19021

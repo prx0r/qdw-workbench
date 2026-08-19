@@ -1,0 +1,11 @@
+[Unit]
+Description=QDW Workbench bridge
+After=network.target
+[Service]
+Type=simple
+Environment=QDW_DB=%h/src/qdw/data/qdw.db
+WorkingDirectory=%h/src/qdw
+ExecStart=%h/.local/bin/qdw-workbench-bridge --listen 127.0.0.1:9911
+Restart=on-failure
+[Install]
+WantedBy=default.target

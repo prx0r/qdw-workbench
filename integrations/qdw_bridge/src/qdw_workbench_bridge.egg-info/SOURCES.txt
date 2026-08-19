@@ -1,0 +1,10 @@
+pyproject.toml
+src/qdw_workbench_bridge/__init__.py
+src/qdw_workbench_bridge/app.py
+src/qdw_workbench_bridge/cli.py
+src/qdw_workbench_bridge.egg-info/PKG-INFO
+src/qdw_workbench_bridge.egg-info/SOURCES.txt
+src/qdw_workbench_bridge.egg-info/dependency_links.txt
+src/qdw_workbench_bridge.egg-info/entry_points.txt
+src/qdw_workbench_bridge.egg-info/requires.txt
+src/qdw_workbench_bridge.egg-info/top_level.txt

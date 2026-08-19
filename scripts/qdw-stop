@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Stop all QDW Workbench processes
+echo "Stopping QDW Workbench..."
+for name in qdw-node qdw-bridge hermes-control qdw-workbench-desktop; do
+  pid=$(pgrep -f "$name" 2>/dev/null || true)
+  if [ -n "$pid" ]; then
+    kill "$pid" 2>/dev/null
+    echo "  Killed $name (PID $pid)"
+  fi
+done
+echo "Done."

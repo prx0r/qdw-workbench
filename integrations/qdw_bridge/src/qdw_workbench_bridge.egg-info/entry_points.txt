@@ -1,0 +1,2 @@
+[console_scripts]
+qdw-workbench-bridge = qdw_workbench_bridge.cli:main

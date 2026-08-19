@@ -1,0 +1,2 @@
+import {useEffect,useState} from 'react';import {api} from '../api';import type {Product} from '../types';
+export function ProductsPanel(){const [xs,setXs]=useState<Product[]>([]);useEffect(()=>{api.products().then(setXs).catch(()=>setXs([]))},[]);return <section><h3>Products</h3>{xs.map(x=><div className="row" key={x.product_id}><b>{x.name}</b><span className={`status ${x.status.toLowerCase()}`}>{x.status}</span><small>{x.factory_id?`${x.factory_id}@${x.factory_version}`:'external'}</small></div>)}</section>}

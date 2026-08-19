@@ -1,0 +1,14 @@
+[package]
+name = "qdw-acp-host"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+agent-client-protocol = "2.0.0"
+anyhow.workspace = true
+serde.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+
+# This crate intentionally contains only ACP-specific code so SDK upgrades are isolated.

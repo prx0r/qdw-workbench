@@ -1,0 +1,3 @@
+import {create} from 'zustand';import type {ContextUsage,NodeMetrics} from './types';
+type State={nodeId:string;workspace:string;file?:string;context:ContextUsage;metrics:NodeMetrics[];setNode:(x:string)=>void;setWorkspace:(x:string)=>void;setFile:(x?:string)=>void;setContext:(x:ContextUsage)=>void;setMetrics:(x:NodeMetrics[])=>void};
+export const useQdw=create<State>((set)=>({nodeId:'local',workspace:'',context:{used:0,max:1,exact:false,buckets:{}},metrics:[],setNode:(nodeId)=>set({nodeId}),setWorkspace:(workspace)=>set({workspace}),setFile:(file)=>set({file}),setContext:(context)=>set({context}),setMetrics:(metrics)=>set({metrics})}));

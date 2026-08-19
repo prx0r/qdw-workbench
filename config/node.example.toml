@@ -1,0 +1,4 @@
+node_id = "hetzner-a"
+listen = "127.0.0.1:9902"
+workspace_roots = ["/srv/qdw"]
+state_db = "/home/qdw/.local/share/qdw-node/node.db"

@@ -1,0 +1,17 @@
+[Unit]
+Description=QDW execution node
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/qdw-node --config %h/.config/qdw-node/config.toml
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.local/share/qdw-node %h/src %h/.cache
+
+[Install]
+WantedBy=default.target

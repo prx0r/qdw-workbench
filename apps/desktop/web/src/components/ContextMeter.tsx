@@ -1,0 +1,2 @@
+import {useQdw} from '../store';
+export function ContextMeter(){const c=useQdw(s=>s.context);const p=Math.min(100,c.used/Math.max(1,c.max)*100);const state=p>=92?'handover':p>=82?'prepare':p>=70?'warn':'normal';return <div className={`context-meter ${state}`} title={`${c.used.toLocaleString()} / ${c.max.toLocaleString()} tokens (${c.exact?'reported':'estimated'})`}><div className="meter-line"><span>CTX</span><span>{p.toFixed(0)}%</span></div><div className="bar"><i style={{width:`${p}%`}}/></div></div>}

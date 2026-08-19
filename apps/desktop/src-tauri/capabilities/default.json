@@ -1,0 +1,10 @@
+{
+  "identifier": "default",
+  "description": "Minimal capability set; privileged operations are custom Rust commands.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default"
+  ]
+}

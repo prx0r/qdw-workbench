@@ -1,0 +1,2 @@
+import {useEffect,useState} from 'react';import {api} from '../api';
+export function FederationPanel(){const [x,setX]=useState<Record<string,{configured:boolean,mode?:string}>>({});useEffect(()=>{api.qdwGet<any>('/v1/federation/health').then(v=>setX(v.systems||{})).catch(()=>{})},[]);return <section><h3>Federation</h3><div className="federation">{Object.entries(x).map(([k,v])=><div className="card" key={k}><b>{k}</b><span>{v.configured?'connected':v.mode||'not configured'}</span></div>)}</div></section>}

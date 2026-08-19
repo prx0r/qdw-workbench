@@ -1,0 +1,387 @@
+{
+  "package": "qdw-workbench",
+  "version": "0.1.0",
+  "generated": "2026-08-19",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "a784d80aad84c5d2adc6e57f7b51fff0e65ddc9e36483a67ccb112ef5800e9d0",
+      "bytes": 1109
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "447672ef3600543b9d4aaacbe2214115a4a41fb563cdd5778f36f7a71ce73d6c",
+      "bytes": 69
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "b5d01ed54c0d281801c0a72edb13a3a395a57f124b8f9340c91a14ddf0647579",
+      "bytes": 892
+    },
+    {
+      "path": "Makefile",
+      "sha256": "0926448b2fd256fdae60cd69022756cd488ca25b4e572b15b3c8abc614131c6c",
+      "bytes": 165
+    },
+    {
+      "path": "README.md",
+      "sha256": "1c651f80356bdffcec7bc351154947c67ac5a203b4e762b9faacdc5d9f285f9c",
+      "bytes": 3934
+    },
+    {
+      "path": "VALIDATION-REPORT.md",
+      "sha256": "09cf816fea2848811da54dfbc13150098757b11b6aaf85551f498a43026233b7",
+      "bytes": 891
+    },
+    {
+      "path": "apps/desktop/src-tauri/Cargo.toml",
+      "sha256": "2df749522622dbcdec5bb956be52f905e7b004bb25e87200c45329562e1c807e",
+      "bytes": 544
+    },
+    {
+      "path": "apps/desktop/src-tauri/build.rs",
+      "sha256": "f8964dceff58a30bc339cda9c07b0f20147ad97297b4b929b20b4db7dc8c149b",
+      "bytes": 32
+    },
+    {
+      "path": "apps/desktop/src-tauri/capabilities/default.json",
+      "sha256": "7f49c9683f4c54d36fe0ee8de9a23034b33897e469c66bd57816b180efa82798",
+      "bytes": 196
+    },
+    {
+      "path": "apps/desktop/src-tauri/src/commands.rs",
+      "sha256": "afd3ceedd6839448a422ddc2f8a397b6408e24f2b2b461e3070c2c7dfa53fb98",
+      "bytes": 5702
+    },
+    {
+      "path": "apps/desktop/src-tauri/src/config.rs",
+      "sha256": "6adb5a7049eca4e954e0c89a726065570a852a5d712547f3cfc0453e4ad14a78",
+      "bytes": 907
+    },
+    {
+      "path": "apps/desktop/src-tauri/src/main.rs",
+      "sha256": "ecd59429271eadf289cba8eb4659bd1f058cbc3f12048e2a67bcc8eda646d4d7",
+      "bytes": 485
+    },
+    {
+      "path": "apps/desktop/src-tauri/tauri.conf.json",
+      "sha256": "d784b6599cd1a570baf2c27ccd511c9d524f43b4360d2bb6efefd9cff7c0bea5",
+      "bytes": 789
+    },
+    {
+      "path": "apps/desktop/web/index.html",
+      "sha256": "bdc45d628e20951d75d5e7abdb606a8147fffc008f384908319627e01683fd4d",
+      "bytes": 248
+    },
+    {
+      "path": "apps/desktop/web/package.json",
+      "sha256": "ec6008ea46d773570edf3753dba68db72b608c46b61f40f260dab20ca4c6ad11",
+      "bytes": 827
+    },
+    {
+      "path": "apps/desktop/web/src/App.tsx",
+      "sha256": "e7ba38ad9123e39e7399356541e30c55392d04880be63c6524bbfb668d6fb04f",
+      "bytes": 1447
+    },
+    {
+      "path": "apps/desktop/web/src/api.ts",
+      "sha256": "05f91768e0e4a9b97821916b11d906a0933849fd273488f1e391e5026509fdb5",
+      "bytes": 1459
+    },
+    {
+      "path": "apps/desktop/web/src/components/AgentPanel.tsx",
+      "sha256": "1887e62bcd34c31e6fcb954dc866dbdc6aa2c0a3692f3d6cc84fd0579053b7a1",
+      "bytes": 1175
+    },
+    {
+      "path": "apps/desktop/web/src/components/ContextMeter.tsx",
+      "sha256": "d14a1a975f0f2bbb3ab848bbd7f82d01a61dd8b9fbbc6d1be2ce0f640ee9ac33",
+      "bytes": 509
+    },
+    {
+      "path": "apps/desktop/web/src/components/CostPanel.tsx",
+      "sha256": "229ea40a37d42d50329164a640c49254c05bc2b333cce8f58b2296df21f99d15",
+      "bytes": 379
+    },
+    {
+      "path": "apps/desktop/web/src/components/Editor.tsx",
+      "sha256": "ecda84bfe8d2a75b0924ffafdeadacc74c821985210d30a84afa3c80efcd7ca4",
+      "bytes": 1444
+    },
+    {
+      "path": "apps/desktop/web/src/components/FederationPanel.tsx",
+      "sha256": "2577944384cfc0e615439120134412a596621c3627c5213fa72acdfe3dcbb69d",
+      "bytes": 510
+    },
+    {
+      "path": "apps/desktop/web/src/components/HumanQueue.tsx",
+      "sha256": "a4abbad2ea39ee5df833a2239b1ee4c4299a777ac88e7ec9a68afc858d8e3da1",
+      "bytes": 1056
+    },
+    {
+      "path": "apps/desktop/web/src/components/NodesPanel.tsx",
+      "sha256": "b374c409b7526ea49d9db494040acbffeb7ae322907ec460ff6960152ec37173",
+      "bytes": 823
+    },
+    {
+      "path": "apps/desktop/web/src/components/ProductsPanel.tsx",
+      "sha256": "0fc70d456c92dc4b79e686456a41995f8432e5baca2a97b65f2d7ca09a41e28b",
+      "bytes": 516
+    },
+    {
+      "path": "apps/desktop/web/src/components/TerminalPanel.tsx",
+      "sha256": "be2f8861b45b19b993928561db9abaea6e4341f498840356426d8c33dfa537d2",
+      "bytes": 1056
+    },
+    {
+      "path": "apps/desktop/web/src/components/WorkspacePanel.tsx",
+      "sha256": "9e35f1a11cdb1a778830b41e612bcc9755ecb135c376c3ededd7e46714f258e6",
+      "bytes": 806
+    },
+    {
+      "path": "apps/desktop/web/src/context.test.ts",
+      "sha256": "ebae7e44f2d28ead271ae2b33e42abe47b8a6b7c64f6f0c597a91c36558bdcd8",
+      "bytes": 218
+    },
+    {
+      "path": "apps/desktop/web/src/main.tsx",
+      "sha256": "fbcc443ae49b7b9afafc9a5ff2b38cbf0425c1d2759639aba60d8052926c3e6d",
+      "bytes": 218
+    },
+    {
+      "path": "apps/desktop/web/src/store.ts",
+      "sha256": "39945cddaf21dde3e874f50065f35a3061baa69893012d93954bc649e131387d",
+      "bytes": 646
+    },
+    {
+      "path": "apps/desktop/web/src/styles.css",
+      "sha256": "a18f8cf60b076b63ada7dfe4589ea0723c95c66534beedef8a62612812ada0aa",
+      "bytes": 4152
+    },
+    {
+      "path": "apps/desktop/web/src/types.ts",
+      "sha256": "f03cb9020ca418c2574e730982f0b6c77c41d677796d751f2ae729be20fb121c",
+      "bytes": 933
+    },
+    {
+      "path": "apps/desktop/web/tsconfig.json",
+      "sha256": "12c6faf088c400df8d44cd5588006c89ac3d6e63a00101a1825dfbd3cbd818a9",
+      "bytes": 418
+    },
+    {
+      "path": "apps/desktop/web/vite.config.ts",
+      "sha256": "4f681673e32e05d27b16bd156453306bebd0319ff46761ba4705b0867d9221a1",
+      "bytes": 184
+    },
+    {
+      "path": "config/config.example.toml",
+      "sha256": "e16e2a79f198383a657d952d80341d51465b1ac5262ba0181f4c5373514069bc",
+      "bytes": 334
+    },
+    {
+      "path": "config/node.example.toml",
+      "sha256": "5123997474c4035b236341f3dd03a79e11fc04e4109aba79ed5754b1dfc214b2",
+      "bytes": 132
+    },
+    {
+      "path": "crates/acp-host/Cargo.toml",
+      "sha256": "b41384cd28edd97b9c601886884bd935ec7fb09468464ca1bd7e0a61e67302c3",
+      "bytes": 333
+    },
+    {
+      "path": "crates/acp-host/src/lib.rs",
+      "sha256": "b7d05e9163aae87b4549ba43d9169e8f43fd1b2aa42b9afc5eab6774cb30fc8a",
+      "bytes": 1443
+    },
+    {
+      "path": "crates/contracts/Cargo.toml",
+      "sha256": "ccd7cf62b99543128513209a310b8e168a26d97ef76898aa09b37a88685b303b",
+      "bytes": 315
+    },
+    {
+      "path": "crates/contracts/src/lib.rs",
+      "sha256": "bd23af4e9464d264ff8aa08023a9635a57f0cbb737ee2688755994b136ff7550",
+      "bytes": 9528
+    },
+    {
+      "path": "crates/qdw-node/Cargo.toml",
+      "sha256": "597f235c5af92526713f2b94099bf5a47ff6d76c67d2d26c5fd8f4cf62fa89ef",
+      "bytes": 535
+    },
+    {
+      "path": "crates/qdw-node/src/app.rs",
+      "sha256": "e1c1afa17c6ad477dbf25c4caff132e9290506fd87d38378b8391160ddac1994",
+      "bytes": 4130
+    },
+    {
+      "path": "crates/qdw-node/src/config.rs",
+      "sha256": "22c3cac36129ff7a3bd59551243f317a14bba6028d41dd371c0bacc5878d635b",
+      "bytes": 804
+    },
+    {
+      "path": "crates/qdw-node/src/git.rs",
+      "sha256": "df6e0a22625c29137ed4f78a6802d849b87f84bb5a4ee712b60d50f5c81de0a9",
+      "bytes": 1787
+    },
+    {
+      "path": "crates/qdw-node/src/handover.rs",
+      "sha256": "66e4b5f4712376caa20f0f592dfe3264d3014a5cb66ab7db7ec887c78cdb8dee",
+      "bytes": 1106
+    },
+    {
+      "path": "crates/qdw-node/src/lib.rs",
+      "sha256": "e3ce27688092cdbc682bc0b3c324e6ecd220da81b762ae45ea4f66b6b33ac1f5",
+      "bytes": 109
+    },
+    {
+      "path": "crates/qdw-node/src/main.rs",
+      "sha256": "17876906ab706ca9ed5d6bdb23b1e0cd4f4fe17eb25882ec216687538aeaa4b8",
+      "bytes": 961
+    },
+    {
+      "path": "crates/qdw-node/src/metrics.rs",
+      "sha256": "ced128bbe1f953b06748fa468259bcb44d2680b03b96d076287d96e9b9e234b7",
+      "bytes": 2063
+    },
+    {
+      "path": "crates/qdw-node/src/process.rs",
+      "sha256": "6e8c4b553aa806e04a7898b07970106da945c5a6ae56354d219f2de099499f2b",
+      "bytes": 1731
+    },
+    {
+      "path": "crates/qdw-node/src/store.rs",
+      "sha256": "8c3c347d94e19d5f6de304955c2dd8cb37beaa4ce31ae3caa1b63ae890b6f2f2",
+      "bytes": 2399
+    },
+    {
+      "path": "crates/qdw-node/tests/integration.rs",
+      "sha256": "fad9d75c74d3edd7a18cd71489719ef0770012c05329b134706e112f7513f7d8",
+      "bytes": 841
+    },
+    {
+      "path": "docs/AGENT_IMPLEMENTATION_HANDOFF.md",
+      "sha256": "98ad4156758e019f7b21746b6c9b6966142f187a3067329c1506077b87434ad7",
+      "bytes": 3035
+    },
+    {
+      "path": "docs/API_GOLD_STANDARD.md",
+      "sha256": "8ffefc493d43e65af8279792b0c8254199e593398da93386a345628ad9dd2660",
+      "bytes": 885
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha256": "25aaaf3f9852ace88f0a70cc507857a2ae5636d851839337e8ac2098da9a747a",
+      "bytes": 4964
+    },
+    {
+      "path": "docs/CONTEXT_AXIOMS.md",
+      "sha256": "27b8c62ec3ba94ad49396ad8d7477e434398195895c9186073f9969b2ad14df3",
+      "bytes": 1198
+    },
+    {
+      "path": "docs/HANDOVER_PROTOCOL.md",
+      "sha256": "3abe010c11dcb15cd2594e31b089a1c9cda6aa265d12148b7075d2087576648f",
+      "bytes": 1146
+    },
+    {
+      "path": "docs/QDW_BASELINE.md",
+      "sha256": "3cfddb2928fd51973651eaf008847dfb749ef6762a518fe49d8a0ccbbba6d30c",
+      "bytes": 968
+    },
+    {
+      "path": "docs/SOURCE_AND_STANDARD_NOTES.md",
+      "sha256": "229223d782b6ffbce56db68331809c8f01e19fdbb5ccc7905b7b6be350e1fdd9",
+      "bytes": 1146
+    },
+    {
+      "path": "docs/TESTING_AND_ANTI_CHEAT.md",
+      "sha256": "13c0e41f9fbeba459be2405ffa128c2bbc208db7179d4b23c7ff27a8b1dcd2f4",
+      "bytes": 2764
+    },
+    {
+      "path": "integrations/qdw_bridge/pyproject.toml",
+      "sha256": "a78d1031d037d75ac19b5e491572ebb83e5bf36a4a87ff79c3cec589a200205f",
+      "bytes": 325
+    },
+    {
+      "path": "integrations/qdw_bridge/src/qdw_workbench_bridge/__init__.py",
+      "sha256": "a3f7f6d5937bec359685bd111481c5ae644f3079f53325bd50490b812a9d2177",
+      "bytes": 20
+    },
+    {
+      "path": "integrations/qdw_bridge/src/qdw_workbench_bridge/__pycache__/__init__.cpython-313.pyc",
+      "sha256": "b899b2d3f83a95e9fb6456bf1be7bc24e18a3a567b3f405de15e4c0a91bb2c93",
+      "bytes": 183
+    },
+    {
+      "path": "integrations/qdw_bridge/src/qdw_workbench_bridge/__pycache__/app.cpython-313.pyc",
+      "sha256": "8b3390dee7793dcd8f3225c6c5274eacd9b454f86315948087619885659caeca",
+      "bytes": 7488
+    },
+    {
+      "path": "integrations/qdw_bridge/src/qdw_workbench_bridge/__pycache__/cli.cpython-313.pyc",
+      "sha256": "4a4cabe3ba4675c2b9f4801aa0e6e7e29a924cd234f20549469d4abed2dcee30",
+      "bytes": 919
+    },
+    {
+      "path": "integrations/qdw_bridge/src/qdw_workbench_bridge/app.py",
+      "sha256": "4c06b14b1dfbe4b800c63d90d2081b65a84fff6f8286e0657cb721fa5bcf70a8",
+      "bytes": 3308
+    },
+    {
+      "path": "integrations/qdw_bridge/src/qdw_workbench_bridge/cli.py",
+      "sha256": "57936ef36e48a494e57cb64556ed1231a7a71bbced80f4d10c2cc166732bbc77",
+      "bytes": 291
+    },
+    {
+      "path": "scripts/benchmark_resources.sh",
+      "sha256": "edff0d2a95c8cb67239ed7c5e6664eb3ad858bb7b2ae831398aae8facbe0185a",
+      "bytes": 721
+    },
+    {
+      "path": "scripts/bootstrap.sh",
+      "sha256": "14b7146772d70279aa46d67dc9d79204e0df25a5a8eaaf4ca030332e57be7c7e",
+      "bytes": 772
+    },
+    {
+      "path": "scripts/ci.sh",
+      "sha256": "14d6ee47ca4605f530ce997052d586feaa4cca57b40ce71e467b7c8d41642ed9",
+      "bytes": 414
+    },
+    {
+      "path": "scripts/dev.sh",
+      "sha256": "d525411bb24cd2e52ed824996d8c9c52d84ab9abd6a61fd9635690c5a8440384",
+      "bytes": 239
+    },
+    {
+      "path": "scripts/install-node.sh",
+      "sha256": "218c4562936541ae3b4f577159ea9e89ae0a1f36b041b8593004c11fdb2a7627",
+      "bytes": 694
+    },
+    {
+      "path": "scripts/package.sh",
+      "sha256": "1e447df19a863f93f3fcec7e065b0b590aefee131dcce138ed4275fbd4667a08",
+      "bytes": 564
+    },
+    {
+      "path": "systemd/qdw-bridge.service",
+      "sha256": "c33388cf7971524a887607a7484fc001c984ac1e09d00a63137cb078f4b86592",
+      "bytes": 275
+    },
+    {
+      "path": "systemd/qdw-node.service",
+      "sha256": "f4b2de1bdc87f26f1282f5fb4e76a2aacfafb0c028b73725432dec5e85b852b8",
+      "bytes": 360
+    },
+    {
+      "path": "tests/mutation_harness.py",
+      "sha256": "969a60484fa1a06371167b6b9bc1a04bbbb9275cc7d54d5c1c7eadac951529a1",
+      "bytes": 1003
+    },
+    {
+      "path": "tests/validate_structure.py",
+      "sha256": "c40c235d98df4ba9dbc17fe8782602f6186189d442018ee26eb5f60826a539c3",
+      "bytes": 1211
+    }
+  ]
+}
