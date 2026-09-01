@@ -1,0 +1,48 @@
+id: security
+name: Security Capability Pool
+description: >
+  Shared doctrine, evidence, and skills across all security venues.
+  Workers join this pool. Findings flow into this pool.
+  Skills promote within this pool via CGE experiments.
+
+subdomains:
+  - smart_contract
+  - oss
+  - web_api
+  - ai_agent
+  - supply_chain
+  - adversarial
+
+initial_venues:
+  - bittensor/sn60-bitsec
+  - bittensor/sn61-redteam
+  - immunefi
+  - cantina
+  - sherlock
+
+shared_assets:
+  - doctrine
+  - skills
+  - playbooks
+  - findings
+  - transfer_claims
+  - benchmarks
+
+context_policy:
+  doctrine: always
+  same_subdomain_findings: 10
+  adjacent_subdomain_findings: 3
+  worker_private_memory: 5
+  max_tokens: 8000
+
+transfer_rules:
+  - domain: security
+    min_tier: STUDIO_FINDING
+    min_confidence: 0.7
+    requires_benchmark: true
+
+promotion_rules:
+  - tier: TRANSFER_CLAIM
+    min_venues: 2
+    min_confidence: 0.8
+    requires_git_merge: true

@@ -86,6 +86,39 @@ class WorkerVersion(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+# ─── Capability Pools ─────────────────────────────────────────────────
+
+class CapabilityScope(BaseModel):
+    """Orthogonal dimension: what domain/capabilities a task or finding relates to.
+
+    A run belongs to ONE venue and ONE or MORE capability pools.
+    """
+    domains: list[str] = Field(default_factory=list)      # security, forecasting, coding
+    subdomains: list[str] = Field(default_factory=list)    # smart_contract, binary_analysis
+    capabilities: list[str] = Field(default_factory=list)  # solidity, fuzzing, exploit_reasoning
+
+
+class CapabilityPool(BaseModel):
+    """A domain pool — workers join pools, findings flow into pools, skills promote within pools."""
+    pool_id: str
+    name: str                                              # security, forecasting, coding, research
+    subdomains: list[str] = Field(default_factory=list)
+    initial_venues: list[str] = Field(default_factory=list)  # bittensor/sn60, immunefi, etc.
+    shared_assets: list[str] = Field(default_factory=list)   # doctrine, skills, findings
+    context_policy: dict = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Venue(BaseModel):
+    """A market/protocol where workers compete. Distinct from capability pools."""
+    venue_id: str
+    name: str                                              # bitsec-sn60, immunefi, metaculus
+    pool_ids: list[str] = Field(default_factory=list)      # which pools this venue draws from
+    protocol: str = ""                                     # bittensor, immunefi, metaculus, cantina
+    metadata: dict = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 # ─── Task & Run ────────────────────────────────────────────────────────
 
 class TaskInstance(BaseModel):
@@ -93,6 +126,7 @@ class TaskInstance(BaseModel):
     studio_id: str
     task_family: str
     split: Split
+    capability_scope: CapabilityScope = Field(default_factory=CapabilityScope)
     seed: int | None = None
     content: dict = Field(default_factory=dict)  # task-specific data
     evaluation_data: dict = Field(default_factory=dict)  # hidden labels
@@ -107,6 +141,7 @@ class RunSpec(BaseModel):
     split: Split
     worker_id: str
     worker_version_id: str
+    capability_scope: CapabilityScope = Field(default_factory=CapabilityScope)
     context_pack_id: str = ""
     budget_envelope_id: str = ""
     evaluator_version_id: str = ""
@@ -283,11 +318,12 @@ class Finding(BaseModel):
     finding_id: str
     tier: FindingTier = FindingTier.OBSERVATION
     studio_id: str = ""
+    capability_scope: CapabilityScope = Field(default_factory=CapabilityScope)
     claim: str = ""
     evidence_experiment_ids: list[str] = Field(default_factory=list)
     evidence_run_ids: list[str] = Field(default_factory=list)
     confidence: float = 0.0
-    valid_in: list[str] = Field(default_factory=list)  # studio IDs
+    valid_in: list[str] = Field(default_factory=list)  # venue IDs where transfer was demonstrated
     transferred_to: list[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -297,8 +333,9 @@ class Finding(BaseModel):
 class ContextFragment(BaseModel):
     fragment_id: str
     source_id: str = ""
-    source_type: str = ""  # doctrine, studio_finding, memory, task, budget
-    trust_tier: str = ""  # canonical, verified, observed, memory, ephemeral
+    source_type: str = ""  # doctrine, finding, memory, task, budget
+    trust_tier: str = ""   # canonical, verified, observed, memory, ephemeral
+    capability_scope: CapabilityScope = Field(default_factory=CapabilityScope)
     observed_at: datetime = Field(default_factory=datetime.utcnow)
     sha256: str = ""
     token_estimate: int = 0

@@ -57,11 +57,21 @@ When HydraDB is running, all graph queries go through Bolt/HTTP. The SQLite proj
 
 ### HydraDB data model
 
+Two orthogonal axes:
+- **CapabilityPool**: what domain (security, forecasting, coding)
+- **Venue**: where you compete (bittensor/sn60, immunefi, metaculus)
+
+A run belongs to ONE venue and ONE or MORE capability pools.
+
 ```
-Nodes: Worker, WorkerVersion, Run, TaskInstance, Studio, Experiment,
-       LearningProposal, Finding, Artifact, BudgetEvent, Agent, Campaign
+Nodes: Worker, WorkerVersion, Run, Studio, TaskInstance, Experiment,
+       LearningProposal, Finding, Artifact, BudgetEvent, CapabilityPool, Venue
+
 Edges: HAS_VERSION, RAN, IN_STUDIO, ATTEMPTED, PART_OF, SUPPORTED_BY,
-       CREATED, VALID_IN, TRANSFERRED_TO, COST, RECEIVED, PRODUCED
+       CREATED, VALID_IN, TRANSFERRED_TO, COST, RECEIVED, PRODUCED,
+       MEMBER_OF (Worker→Pool), CONTRIBUTES_TO (Run→Pool),
+       EXECUTED_AT (Run→Venue), APPLIES_TO (Finding→Pool),
+       HAS_VENUE (Pool→Venue)
 ```
 
 ### HydraDB client (Python)
@@ -106,6 +116,55 @@ session.run('MERGE (n:Worker {id: 1})')        # MERGE
 session.run('MATCH (a) CREATE (a)-[:EDGE]->(b)')  # MATCH+CREATE
 session.run('MATCH (n) RETURN n')              # whole node return
 session.run('MATCH (n) RETURN count(n)')       # count(n)
+```
+
+## Capability Pools
+
+The lab has two orthogonal axes:
+
+| Axis | Examples |
+|------|----------|
+| **CapabilityPool** | security, forecasting, coding, research |
+| **Venue** | bittensor/sn60, immunefi, metaculus |
+
+A run belongs to ONE venue and ONE or MORE capability pools.
+
+### Pool architecture
+
+```
+ORACLE tags opportunity → pool
+     ↓
+CAPABILITY POOL handles it (shared doctrine + evidence + skills)
+     ↓
+executes through venue adapter (bittensor, immunefi, etc.)
+     ↓
+HYDRADB records what happened
+     ↓
+pool workers gain retrieval access
+     ↓
+CGE tests promising lessons
+     ↓
+GIT promotes validated skill
+     ↓
+next venue worker inherits it
+```
+
+### Pool-based queries
+
+```python
+from integrations.hydra import (
+    create_pool, create_pool_venue, create_worker_in_pool,
+    get_pool_stats, get_pool_findings, get_transferred_findings,
+)
+
+# Create pool with venues
+create_pool(pool_id='security', name='security')
+create_pool_venue(pool_id='security', venue_id='bitsec', venue_name='Bitsec SN60')
+
+# Query pool
+get_pool_stats('security')        # runs, findings, workers, venues
+get_pool_findings('security')     # all findings in pool
+get_transferred_findings()        # findings that crossed venues
 ```
 
 ## The Three Layers

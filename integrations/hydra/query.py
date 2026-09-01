@@ -174,3 +174,111 @@ def win_rate_by_studio(client: HydraClient | None = None) -> list[dict]:
         if r["outcome"] == "won":
             stats[studio]["won"] += 1
     return [{"studio": k, **v} for k, v in stats.items()]
+
+
+# ─── Pool-based queries ───────────────────────────────────────────────
+
+def list_pools(client: HydraClient | None = None) -> list[dict]:
+    """List all capability pools."""
+    return _client(client).run("MATCH (pool:CapabilityPool) RETURN pool.name AS name")
+
+
+def get_pool_venues(pool_name: str, client: HydraClient | None = None) -> list[dict]:
+    """Get all venues for a pool."""
+    return _client(client).run("""
+        MATCH (pool:CapabilityPool {name: $pool})-[:HAS_VENUE]->(v:Venue)
+        RETURN v.name AS venue, v.protocol AS protocol
+    """, pool=pool_name)
+
+
+def get_pool_workers(pool_name: str, client: HydraClient | None = None) -> list[dict]:
+    """Get all workers in a pool."""
+    return _client(client).run("""
+        MATCH (w:Worker)-[:MEMBER_OF]->(pool:CapabilityPool {name: $pool})
+        RETURN w.name AS worker
+    """, pool=pool_name)
+
+
+def get_pool_findings(pool_name: str, client: HydraClient | None = None) -> list[dict]:
+    """Get all findings for a pool."""
+    return _client(client).run("""
+        MATCH (f:Finding)-[:APPLIES_TO]->(pool:CapabilityPool {name: $pool})
+        RETURN f.claim AS claim, f.tier AS tier, f.confidence AS confidence
+    """, pool=pool_name)
+
+
+def get_pool_runs(pool_name: str, client: HydraClient | None = None) -> list[dict]:
+    """Get all runs contributing to a pool."""
+    return _client(client).run("""
+        MATCH (r:Run)-[:CONTRIBUTES_TO]->(pool:CapabilityPool {name: $pool})
+        RETURN r.outcome AS outcome, r.studio AS studio
+    """, pool=pool_name)
+
+
+def get_pool_findings_by_tier(pool_name: str, tier: str, client: HydraClient | None = None) -> list[dict]:
+    """Get findings in a pool filtered by tier."""
+    return _client(client).run("""
+        MATCH (f:Finding {tier: $tier})-[:APPLIES_TO]->(pool:CapabilityPool {name: $pool})
+        RETURN f.claim AS claim, f.confidence AS confidence
+    """, pool=pool_name, tier=tier)
+
+
+def get_pool_stats(pool_name: str, client: HydraClient | None = None) -> dict:
+    """Get stats for a pool: runs, findings, workers, venues."""
+    c = _client(client)
+    runs = c.run("""
+        MATCH (r:Run)-[:CONTRIBUTES_TO]->(pool:CapabilityPool {name: $pool})
+        RETURN count(*) AS count
+    """, pool=pool_name)
+    findings = c.run("""
+        MATCH (f:Finding)-[:APPLIES_TO]->(pool:CapabilityPool {name: $pool})
+        RETURN count(*) AS count
+    """, pool=pool_name)
+    workers = c.run("""
+        MATCH (w:Worker)-[:MEMBER_OF]->(pool:CapabilityPool {name: $pool})
+        RETURN count(*) AS count
+    """, pool=pool_name)
+    venues = c.run("""
+        MATCH (pool:CapabilityPool {name: $pool})-[:HAS_VENUE]->(v:Venue)
+        RETURN count(*) AS count
+    """, pool=pool_name)
+    return {
+        "pool": pool_name,
+        "runs": runs[0]["count"] if runs else 0,
+        "findings": findings[0]["count"] if findings else 0,
+        "workers": workers[0]["count"] if workers else 0,
+        "venues": venues[0]["count"] if venues else 0,
+    }
+
+
+def get_transferred_findings(client: HydraClient | None = None) -> list[dict]:
+    """Findings that have been transferred across venues."""
+    return _client(client).run("""
+        MATCH (f:Finding)-[:APPLIES_TO]->(pool:CapabilityPool)
+        WHERE f.tier = 'TRANSFER_CLAIM' OR f.tier = 'DOCTRINE'
+        RETURN f.claim AS claim, f.tier AS tier, pool.name AS pool,
+               f.valid_in AS valid_in, f.transferred_to AS transferred_to
+    """)
+
+
+def get_pool_win_rate(pool_name: str, client: HydraClient | None = None) -> list[dict]:
+    """Win rate per venue within a pool."""
+    runs = _client(client).run("""
+        MATCH (r:Run)-[:EXECUTED_AT]->(v:Venue)-[:HAS_VENUE]-(pool:CapabilityPool {name: $pool})
+        RETURN v.name AS venue, r.outcome AS outcome
+    """, pool=pool_name)
+    stats: dict[str, dict] = {}
+    for r in runs:
+        venue = r["venue"]
+        if venue not in stats:
+            stats[venue] = {"total": 0, "won": 0}
+        stats[venue]["total"] += 1
+        if r["outcome"] == "won":
+            stats[venue]["won"] += 1
+    return [{"venue": k, **v} for k, v in stats.items()]
+
+
+def pool_summary(client: HydraClient | None = None) -> list[dict]:
+    """Summary of all pools."""
+    pools = list_pools(client)
+    return [get_pool_stats(p["name"], client) for p in pools]
