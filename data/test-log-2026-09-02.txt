@@ -1,0 +1,59 @@
+============================================================
+CP1 PHASES 0-4 INTEGRATION TEST
+============================================================
+
+--- PHASE 0: Frozen Contracts ---
+Worker: security-01
+Version: security-01/v0 (model=mimo-v2.5)
+Digest: sha256:799b194e61c370d7ad80100...
+OK: version frozen
+OK: extra forbidden
+Task: bitsec-task-001 (split=Split.TRAIN)
+Budget: $0.05, 60s
+RunSpec: run-bitsec-001
+Phase 0: PASS
+
+--- PHASE 1: Event Ledger ---
+Event 1: worker.created (evt-f7998b810c99...)
+Event 2: version.created (evt-278fa9a5e2a6...)
+Event 3: task.created (evt-dfc410075946...)
+Event 4: run.created (evt-e0f28e7565d1...)
+Chain: valid=True, events=4
+Total events: 4
+Worker history: 1 events
+Idempotent import: 0 new, 4 skipped
+Conflict: 1 errors
+Phase 1: PASS
+
+--- PHASE 2: Artifact Store ---
+Config: sha256:b716bd7d1610b781ff6e570... (87 bytes)
+Task: sha256:723bcaddeb410de601b2113...
+Verify config: True
+Retrieve: worker_id=security-01
+Idempotent: same digest
+Total artifacts: 2
+Phase 2: PASS
+
+--- PHASE 3: Hydra Projector ---
+Before rebuild: {'workers': 0, 'versions': 0, 'runs': 0, 'studios': 0, 'experiments': 0, 'findings': 0, 'proposals': 0}
+Rebuild: projected=3, errors=0
+After rebuild: {'workers': 2, 'versions': 2, 'runs': 1, 'studios': 1, 'experiments': 0, 'findings': 0, 'proposals': 0}
+Phase 3: PASS
+
+--- PHASE 4: Execution Backend ---
+Execute: success=True, artifacts=1
+Run events: 2
+  Artifact output-run-bitsec-001.txt: valid (35 bytes)
+Eval: success=True, score=0.82
+Finding: STUDIO_FINDING — Reentrancy vulnerability detected in tar...
+Phase 4: PASS
+
+--- FINAL VERIFICATION ---
+Chain: valid=True, events=7
+Artifacts: 3 stored
+Graph: {'workers': 2, 'versions': 2, 'runs': 1, 'studios': 1, 'experiments': 0, 'findings': 0, 'proposals': 0}
+Ledger: 7 events, 7 types
+
+============================================================
+ALL PHASES 0-4 PASS
+============================================================

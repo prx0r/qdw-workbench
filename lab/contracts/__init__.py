@@ -377,6 +377,7 @@ class PromotionReceipt(FrozenModel):
     candidate: str
     experiment_result: str
     source_commit: str = ""
+    reason: str = ""
     promoted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
