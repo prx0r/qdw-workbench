@@ -12,6 +12,12 @@ from lab.modules.registry import ModuleRegistry
 from lab.controller import LabController
 from lab.pools.matcher import match_demand_to_pools
 from lab.context.compiler import compile_context
+from pydantic import BaseModel
+
+
+class ContextRequest(BaseModel):
+    pool_ids: list[str]
+    total_tokens: int = 8000
 
 app = FastAPI(title="Private Lab API", version="0.1.0")
 controller = LabController()
@@ -71,14 +77,12 @@ def match_opportunity(demand: CapabilityDemand):
 
 
 @app.post("/v1/context")
-def get_context(pool_ids: list[str], total_tokens: int = 8000):
+def get_context(req: ContextRequest):
     """Compile a context pack from specified pools."""
-    matches = [CapabilityDemand(demands={pid: 1.0}) for pid in pool_ids]
-    # Convert to PoolMatch objects
     from lab.modules import PoolMatch
     pool_matches = [PoolMatch(pool_id=pid, relevance=1.0, evidence_strength=0.5, transfer_prior=0.0)
-                    for pid in pool_ids]
-    context = compile_context(pool_matches, CapabilityDemand(), total_tokens=total_tokens)
+                    for pid in req.pool_ids]
+    context = compile_context(pool_matches, CapabilityDemand(), total_tokens=req.total_tokens)
     return context
 
 
