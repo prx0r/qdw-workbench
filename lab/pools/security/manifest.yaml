@@ -1,48 +1,248 @@
 id: security
-name: Security Capability Pool
+name: Security Lab
 description: >
-  Shared doctrine, evidence, and skills across all security venues.
-  Workers join this pool. Findings flow into this pool.
-  Skills promote within this pool via CGE experiments.
+  Evidence-first code security research. Not generic "cybersecurity."
+  Bitsec is the training/evaluation anchor. Capabilities transfer to
+  Immunefi, Cantina, Sherlock, Google OSS VRP, Huntr, HackerOne, and more.
 
-subdomains:
-  - smart_contract
-  - oss
-  - web_api
-  - ai_agent
-  - supply_chain
-  - adversarial
+# ─── Schools ────────────────────────────────────────────────────────
+# Each school is a specialization within the security pool.
+# Workers develop expertise across schools over time.
 
-initial_venues:
-  - bittensor/sn60-bitsec
-  - bittensor/sn61-redteam
-  - immunefi
-  - cantina
-  - sherlock
+schools:
+  code-audit:
+    description: "Read code → discover vulnerability → report it"
+    venues:
+      - bitsec/sn60          # training/evaluation anchor
+      - immunefi/competitions
+      - immunefi/bounties
+      - cantina/competitions
+      - cantina/bounties
+      - sherlock/contests
+      - sherlock/bounties
+      - google-oss-vrp
+      - hackenproof
+      - intigriti
+      - private-audits
+    languages:
+      - solidity
+      - vyper
+      - cairo
+      - rust
+      - move
+      - javascript
+      - typescript
+      - go
+      - python
+    transfer_from_bitsec: 0.95
 
-shared_assets:
-  - doctrine
-  - skills
-  - playbooks
-  - findings
-  - transfer_claims
-  - benchmarks
+  ai-redteam:
+    description: "Agent/AI system exploitation — prompt injection, RAG poisoning, tool abuse"
+    venues:
+      - huntr/challenges       # AI-agent red-team challenges
+      - hackerone/ai-programs  # AI/RAG/agent security
+      - kaggle/ai-security
+    transfer_from_bitsec: 0.60
+
+  adversarial-systems:
+    description: "Defeating security/bot-detection systems"
+    venues:
+      - bittensor/sn61        # adversarial cybersecurity tournament
+    transfer_from_bitsec: 0.50
+
+# ─── Markets (detailed) ─────────────────────────────────────────────
+
+markets:
+  bitsec:
+    venue: bittensor/sn60
+    school: code-audit
+    type: training_benchmark
+    description: "Primary training/evaluation anchor. Validators run agents against sandboxed projects."
+    languages: [solidity, vyper, cairo, rust, move]
+    current_status: live
+    reward_range: "TAO emissions"
+    why_first: "Cleanest training loop: codebase → investigate → findings → hidden truth → validator score → iterate"
+
+  immunefi_competitions:
+    venue: immunefi
+    school: code-audit
+    type: security_code_contest
+    description: "Competitive smart-contract audits"
+    languages: [solidity, vyper]
+    current_status: live
+    reward_range: "$10K-$500K+"
+    transfer_from_bitsec: 0.95
+
+  immunefi_bounties:
+    venue: immunefi
+    school: code-audit
+    type: security_live_bounty
+    description: "Find high-impact live protocol bugs"
+    languages: [solidity, vyper, rust]
+    current_status: live
+    reward_range: "$1K-$10M+"
+    programs_count: 184
+    transfer_from_bitsec: 0.90
+
+  cantina_competitions:
+    venue: cantina
+    school: code-audit
+    type: security_code_contest
+    description: "Time-boxed code review competitions"
+    languages: [solidity, vyper, rust, move]
+    current_status: live
+    reward_range: "$10K-$500K+"
+    live_opportunities: 44
+    notable_targets: [uniswap, coinbase, morpho, monad]
+    transfer_from_bitsec: 0.95
+
+  cantina_bounties:
+    venue: cantina
+    school: code-audit
+    type: security_live_bounty
+    description: "Continuous vulnerability hunting"
+    languages: [solidity, vyper, rust]
+    current_status: live
+    reward_range: "$1K-$500K+"
+    transfer_from_bitsec: 0.90
+
+  sherlock_contests:
+    venue: sherlock
+    school: code-audit
+    type: security_code_contest
+    description: "Competitive protocol auditing"
+    languages: [solidity, vyper]
+    current_status: live
+    reward_range: "$10K-$500K+"
+    transfer_from_bitsec: 0.95
+
+  sherlock_bounties:
+    venue: sherlock
+    school: code-audit
+    type: security_live_bounty
+    description: "Post-launch vulnerability research"
+    languages: [solidity, vyper]
+    current_status: live
+    reward_range: "$1K-$100K+"
+    transfer_from_bitsec: 0.90
+
+  google_oss_vrp:
+    venue: google-oss-vrp
+    school: code-audit
+    type: security_oss_reward
+    description: "OSS vulnerability + reproducible proof/patch. Requires exact reproduction or merged patch."
+    languages: [any]
+    current_status: live
+    reward_range: "$100-$31,337"
+    transfer_from_bitsec: 0.75
+    key_insight: "Google changed rules in 2026 to require reproducible evidence, not AI speculation. Validates our evidence-first approach."
+
+  huntr_challenges:
+    venue: huntr
+    school: ai-redteam
+    type: security_ai_redteam
+    description: "AI-agent exploitation challenges. Huntr transitioned from OSS bounties to AI security competitions."
+    languages: [python, javascript]
+    current_status: live
+    reward_range: "$5K-$50K+"
+    current_challenge: "$15K AI-agent red-team challenge"
+    transfer_from_bitsec: 0.60
+    key_insight: "Second evaluation school: Bitsec = code security, Huntr = agent security. Same machinery, different domain."
+
+  hackerone_ai:
+    venue: hackerone
+    school: ai-redteam
+    type: security_ai_redteam
+    description: "AI/RAG/agent security programs"
+    languages: [python, javascript]
+    current_status: live
+    reward_range: "$500-$50K+"
+    transfer_from_bitsec: 0.55
+
+  hackerone_general:
+    venue: hackerone
+    school: code-audit
+    type: security_triage
+    description: "General web/API/product security"
+    languages: [any]
+    current_status: live
+    reward_range: "$100-$50K+"
+    transfer_from_bitsec: 0.50
+
+  intigriti:
+    venue: intigriti
+    school: code-audit
+    type: security_live_bounty
+    description: "Web/API security bounties"
+    languages: [any]
+    current_status: live
+    reward_range: "$50-$25K+"
+    transfer_from_bitsec: 0.50
+
+  hackenproof:
+    venue: hackenproof
+    school: code-audit
+    type: security_live_bounty
+    description: "Blockchain security bounties"
+    languages: [solidity, rust, move]
+    current_status: live
+    reward_range: "$100-$100K+"
+    transfer_from_bitsec: 0.80
+
+  sn61_redteam:
+    venue: bittensor/sn61
+    school: adversarial-systems
+    type: security_adversarial_challenge
+    description: "Adversarial cybersecurity tournament. Defeating security/bot-detection systems."
+    languages: [any]
+    current_status: live
+    reward_range: "TAO emissions"
+    transfer_from_bitsec: 0.50
+
+  security_tooling:
+    venue: api-market
+    school: code-audit
+    type: security_tool_sale
+    description: "Sell the trained auditor itself as an API service"
+    endpoints:
+      - POST /audit/repo
+      - POST /audit/pr
+      - POST /audit/contract
+      - POST /verify/finding
+      - POST /verify/patch
+    transfer_from_bitsec: 1.00
+    key_insight: "Bitsec isn't only win TAO — it's subsidized training for a security product."
+
+# ─── Metrics ─────────────────────────────────────────────────────────
+
+success_metric: >
+  VALID_FINDING_RATE
+  × IMPACT
+  × REPRODUCIBILITY
+  × ACCEPTANCE_PROBABILITY
+  - FALSE_POSITIVE_COST
+  - INFERENCE_COST
+
+training_metric: >
+  Do Bitsec improvements correlate with contest performance?
+  That's the killer experiment.
+
+# ─── Context policy ─────────────────────────────────────────────────
 
 context_policy:
   doctrine: always
-  same_subdomain_findings: 10
-  adjacent_subdomain_findings: 3
+  same_school_findings: 10
+  adjacent_school_findings: 3
   worker_private_memory: 5
-  max_tokens: 8000
+  venue_intel: 3
+  max_tokens: 12000
 
-transfer_rules:
-  - domain: security
-    min_tier: STUDIO_FINDING
-    min_confidence: 0.7
-    requires_benchmark: true
+# ─── Checkpoints ─────────────────────────────────────────────────────
 
-promotion_rules:
-  - tier: TRANSFER_CLAIM
-    min_venues: 2
-    min_confidence: 0.8
-    requires_git_merge: true
+checkpoints:
+  1: "Get untouched Bitsec baseline running, reproduce local benchmark score"
+  2: "Create sealed historical vulnerability set (repo, commit, language, class, severity, ground truth, exploit, fix, regression tests)"
+  3: "Run Hydra experiments: model, prompt, search strategy, context strategy, tools, budget, verification strategy"
+  4: "Prove learning: v1→v2→v3 score improvement, not just 'agent changed'"
+  5: "Bitsec submission"
+  6: "Transfer: same worker into historical Cantina/Immunefi/Sherlock, measure without retraining"
