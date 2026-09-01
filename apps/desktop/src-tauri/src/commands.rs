@@ -170,3 +170,66 @@ pub async fn pty_close(session_id:String)->Result<Value,String>{
 }
 
 fn e(x:impl std::fmt::Display)->String{x.to_string()}
+
+// --- HydraDB commands ---
+
+#[tauri::command]
+pub async fn hydra_health()->Result<Value,String>{
+    let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
+    let out=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py")).arg("--health").output().await.map_err(e)?;
+    if !out.status.success(){return Err(String::from_utf8_lossy(&out.stderr).into_owned())}
+    serde_json::from_slice(&out.stdout).map_err(e)
+}
+
+#[tauri::command]
+pub async fn hydra_summary()->Result<Value,String>{
+    let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
+    let out=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py")).arg("--summary").output().await.map_err(e)?;
+    if !out.status.success(){return Err(String::from_utf8_lossy(&out.stderr).into_owned())}
+    serde_json::from_slice(&out.stdout).map_err(e)
+}
+
+#[tauri::command]
+pub async fn hydra_query(query:String)->Result<Value,String>{
+    let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
+    let input=serde_json::json!({"query":query}).to_string();
+    let child=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py"))
+        .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped())
+        .spawn().map_err(e)?;
+    // Write input to stdin
+    if let Some(mut stdin)=child.stdin{
+        use tokio::io::AsyncWriteExt;
+        stdin.write_all(input.as_bytes()).await.map_err(e)?;
+    }
+    // Wait for output
+    let result=child.wait_with_output().await.map_err(e)?;
+    if !result.status.success(){return Err(String::from_utf8_lossy(&result.stderr).into_owned())}
+    serde_json::from_slice(&result.stdout).map_err(e)
+}
+
+#[tauri::command]
+pub async fn hydra_count(label:String)->Result<Value,String>{
+    let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
+    let out=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py")).arg("--count").arg(&label).output().await.map_err(e)?;
+    if !out.status.success(){return Err(String::from_utf8_lossy(&out.stderr).into_owned())}
+    serde_json::from_slice(&out.stdout).map_err(e)
+}
+
+#[tauri::command]
+pub async fn hydra_list(label:String,limit:Option<u32>)->Result<Value,String>{
+    let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
+    let mut args=vec!["--list".to_string(), label];
+    if let Some(l)=limit{args.push(l.to_string());}
+    let out=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py")).args(&args).output().await.map_err(e)?;
+    if !out.status.success(){return Err(String::from_utf8_lossy(&out.stderr).into_owned())}
+    serde_json::from_slice(&out.stdout).map_err(e)
+}
+
+#[tauri::command]
+pub async fn agent_list()->Result<Value,String>{
+    let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
+    let out=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py"))
+        .arg("--list").arg("Worker").arg("20").output().await.map_err(e)?;
+    if !out.status.success(){return Err(String::from_utf8_lossy(&out.stderr).into_owned())}
+    serde_json::from_slice(&out.stdout).map_err(e)
+}

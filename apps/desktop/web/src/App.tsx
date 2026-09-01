@@ -1,2 +1,52 @@
-import {useState} from 'react';import {WorkspacePanel} from './components/WorkspacePanel';import {Editor} from './components/Editor';import {AgentPanel} from './components/AgentPanel';import {NodesPanel} from './components/NodesPanel';import {HumanQueue} from './components/HumanQueue';import {ProductsPanel} from './components/ProductsPanel';import {CostPanel} from './components/CostPanel';import {ContextMeter} from './components/ContextMeter';import {TerminalPanel} from './components/TerminalPanel';import {FederationPanel} from './components/FederationPanel';import {MemoryPanel} from './components/MemoryPanel';
-export default function App(){const [tab,setTab]=useState('Control');return <main><header><strong>QDW</strong><span>WORKBENCH</span><nav>{['Control','Code','Context','Memory','Costs','Frontier'].map(x=><button className={tab===x?'on':''} onClick={()=>setTab(x)} key={x}>{x}</button>)}</nav><ContextMeter/></header><div className="layout"><aside className="left"><WorkspacePanel/></aside><section className="center">{tab==='Code'?<div className="code-stack"><Editor/><TerminalPanel/></div>:tab==='Memory'?<MemoryPanel />:<><div className="hero"><div><h1>{tab}</h1><p>One human window into QDW execution, products, context and evidence.</p></div></div><CostPanel/><FederationPanel/><ProductsPanel/></>}</section><aside className="right"><AgentPanel/><NodesPanel/><HumanQueue/></aside></div><footer><span>QDW authority · Workbench projection</span><span>ACP · LCM · Superpowers · Memory</span></footer></main>}
+import { useState, useEffect, useCallback } from 'react'
+import { invoke } from '@tauri-apps/api/core'
+import { LabDashboard } from './components/LabDashboard'
+import { TerminalPanel } from './components/TerminalPanel'
+import { GraphPanel } from './components/GraphPanel'
+import { AgentPanel } from './components/AgentPanel'
+import './styles.css'
+
+type Tab = 'dashboard' | 'terminal' | 'graph' | 'agents'
+
+export default function App() {
+  const [tab, setTab] = useState<Tab>('dashboard')
+  const [hydraReady, setHydraReady] = useState(false)
+
+  useEffect(() => {
+    invoke('hydra_health').then((h: any) => {
+      setHydraReady(h?.status === 'ready')
+    }).catch(() => setHydraReady(false))
+  }, [])
+
+  return (
+    <main>
+      <header>
+        <strong>PRIVATE LAB</strong>
+        <span className={`status-dot ${hydraReady ? 'live' : 'dead'}`}>
+          {hydraReady ? '● HYDRA LIVE' : '○ HYDRA OFFLINE'}
+        </span>
+        <nav>
+          {(['dashboard', 'terminal', 'graph', 'agents'] as Tab[]).map(t => (
+            <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>
+              {t === 'dashboard' ? '📊 Dashboard' :
+               t === 'terminal' ? '⌨ Terminal' :
+               t === 'graph' ? '🔗 Graph' : '🤖 Agents'}
+            </button>
+          ))}
+        </nav>
+      </header>
+      <div className="layout">
+        <section className="center">
+          {tab === 'dashboard' && <LabDashboard />}
+          {tab === 'terminal' && <TerminalPanel />}
+          {tab === 'graph' && <GraphPanel />}
+          {tab === 'agents' && <AgentPanel />}
+        </section>
+      </div>
+      <footer>
+        <span>Private Lab · HydraDB Native</span>
+        <span>{hydraReady ? 'Graph connected' : 'Graph offline'}</span>
+      </footer>
+    </main>
+  )
+}
