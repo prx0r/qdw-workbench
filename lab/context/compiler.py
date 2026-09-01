@@ -10,6 +10,7 @@ The compiler builds a bounded context pack from:
 """
 from __future__ import annotations
 import json
+from pathlib import Path
 from typing import Any
 from lab.modules import PoolMatch, CapabilityDemand
 from integrations.hydra import get_client, hash_id

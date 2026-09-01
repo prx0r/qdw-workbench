@@ -233,3 +233,41 @@ pub async fn agent_list()->Result<Value,String>{
     if !out.status.success(){return Err(String::from_utf8_lossy(&out.stderr).into_owned())}
     serde_json::from_slice(&out.stdout).map_err(e)
 }
+
+// --- Pool commands ---
+
+#[tauri::command]
+pub async fn pool_summary()->Result<Value,String>{
+    let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
+    let out=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py"))
+        .arg("--pools").output().await.map_err(e)?;
+    if !out.status.success(){return Err(String::from_utf8_lossy(&out.stderr).into_owned())}
+    serde_json::from_slice(&out.stdout).map_err(e)
+}
+
+#[tauri::command]
+pub async fn pool_stats(pool_name:String)->Result<Value,String>{
+    let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
+    let out=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py"))
+        .arg("--pool-stats").arg(&pool_name).output().await.map_err(e)?;
+    if !out.status.success(){return Err(String::from_utf8_lossy(&out.stderr).into_owned())}
+    serde_json::from_slice(&out.stdout).map_err(e)
+}
+
+#[tauri::command]
+pub async fn pool_findings(pool_name:String)->Result<Value,String>{
+    let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
+    let out=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py"))
+        .arg("--pool-findings").arg(&pool_name).output().await.map_err(e)?;
+    if !out.status.success(){return Err(String::from_utf8_lossy(&out.stderr).into_owned())}
+    serde_json::from_slice(&out.stdout).map_err(e)
+}
+
+#[tauri::command]
+pub async fn transferred_findings()->Result<Value,String>{
+    let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
+    let out=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py"))
+        .arg("--transferred").output().await.map_err(e)?;
+    if !out.status.success(){return Err(String::from_utf8_lossy(&out.stderr).into_owned())}
+    serde_json::from_slice(&out.stdout).map_err(e)
+}
