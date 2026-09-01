@@ -297,3 +297,117 @@ def create_finding_in_pool(client: HydraClient | None = None,
     query = f"CREATE (f:Finding {{{f_str}}})-[:APPLIES_TO]->(pool:CapabilityPool {{{p_str}}})"
     c.run_write(query, **params)
     return {"finding_id": fid, "pool_id": pid}
+
+
+# ─── World Genome subgraphs ──────────────────────────────────────────
+
+def create_world_genome(client: HydraClient | None = None,
+                        genome_id: str = "", family_id: str = "",
+                        difficulty: int = 1, seed: int = 0,
+                        structure: str = "", information: str = "",
+                        resources: str = "", **props) -> dict:
+    """Create a WorldGenome node (via self-referencing edge)."""
+    c = _client(client)
+    gid = hash_id(genome_id)
+    p = {"id": gid, "genome_id": genome_id, "family_id": family_id,
+         "difficulty": difficulty, "seed": seed}
+    if structure:
+        p["structure"] = structure
+    if information:
+        p["information"] = information
+    if resources:
+        p["resources"] = resources
+    p.update(props)
+
+    g_str = ", ".join(f"{k}: ${k}" for k in p)
+    query = f"CREATE (g:WorldGenome {{{g_str}}})-[:_SELF]->(g2:WorldGenome {{id: $id}})"
+    c.run_write(query, **p)
+    c.run_write("MATCH (g:WorldGenome {id: $id})-[r:_SELF]->() DELETE r", id=gid)
+    return {"genome_id": gid}
+
+
+def create_run_with_world(client: HydraClient | None = None,
+                          run_id: str = "", genome_id: str = "",
+                          outcome: str = "pending", **run_props) -> dict:
+    """Create Run + WorldGenome linked subgraph."""
+    c = _client(client)
+    rid = hash_id(run_id)
+    gid = hash_id(genome_id)
+
+    rp = {"id": rid, "outcome": outcome}
+    rp.update(run_props)
+    gp = {"id": gid, "genome_id": genome_id}
+
+    r_str = ", ".join(f"{k}: ${k}" for k in rp)
+    g_str = ", ".join(f"{k}: $g_{k}" for k in gp)
+    params = {k: v for k, v in rp.items()}
+    params.update({f"g_{k}": v for k, v in gp.items()})
+
+    query = f"CREATE (r:Run {{{r_str}}})-[:EXECUTED_IN]->(g:WorldGenome {{{g_str}}})"
+    c.run_write(query, **params)
+    return {"run_id": rid, "genome_id": gid}
+
+
+# ─── Capability subgraphs ────────────────────────────────────────────
+
+def create_capability(client: HydraClient | None = None,
+                      capability_id: str = "", capability: str = "",
+                      worker_id: str = "", family_id: str = "",
+                      score: float = 0.0, n_samples: int = 1,
+                      **props) -> dict:
+    """Create a Capability node (via self-referencing edge)."""
+    c = _client(client)
+    cid = hash_id(capability_id)
+    p = {"id": cid, "capability_id": capability_id, "capability": capability,
+         "worker_id": worker_id, "family_id": family_id,
+         "score": score, "n_samples": n_samples}
+    p.update(props)
+
+    cap_str = ", ".join(f"{k}: ${k}" for k in p)
+    query = f"CREATE (cap:Capability {{{cap_str}}})-[:_SELF]->(cap2:Capability {{id: $id}})"
+    c.run_write(query, **p)
+    c.run_write("MATCH (cap:Capability {id: $id})-[r:_SELF]->() DELETE r", id=cid)
+    return {"capability_id": cid}
+
+
+# ─── FailureMode subgraphs ──────────────────────────────────────────
+
+def create_failure_mode(client: HydraClient | None = None,
+                        failure_id: str = "", family_id: str = "",
+                        failure_mode: str = "", severity: float = 0.0,
+                        worker_id: str = "", **props) -> dict:
+    """Create a FailureMode node (via self-referencing edge)."""
+    c = _client(client)
+    fid = hash_id(failure_id)
+    p = {"id": fid, "failure_id": failure_id, "family_id": family_id,
+         "failure_mode": failure_mode, "severity": severity, "worker_id": worker_id}
+    p.update(props)
+
+    fm_str = ", ".join(f"{k}: ${k}" for k in p)
+    query = f"CREATE (fm:FailureMode {{{fm_str}}})-[:_SELF]->(fm2:FailureMode {{id: $id}})"
+    c.run_write(query, **p)
+    c.run_write("MATCH (fm:FailureMode {id: $id})-[r:_SELF]->() DELETE r", id=fid)
+    return {"failure_id": fid}
+
+
+# ─── Insight subgraphs ──────────────────────────────────────────────
+
+def create_insight(client: HydraClient | None = None,
+                   insight_id: str = "", title: str = "",
+                   body: str = "", kind: str = "",
+                   experiment_id: str = "", evidence_runs: int = 0,
+                   confidence: float = 0.0, **props) -> dict:
+    """Create an Insight node (via self-referencing edge)."""
+    c = _client(client)
+    iid = hash_id(insight_id)
+    p = {"id": iid, "insight_id": insight_id, "title": title, "body": body,
+         "kind": kind, "evidence_runs": evidence_runs, "confidence": confidence}
+    if experiment_id:
+        p["experiment_id"] = experiment_id
+    p.update(props)
+
+    i_str = ", ".join(f"{k}: ${k}" for k in p)
+    query = f"CREATE (i:Insight {{{i_str}}})-[:_SELF]->(i2:Insight {{id: $id}})"
+    c.run_write(query, **p)
+    c.run_write("MATCH (i:Insight {id: $id})-[r:_SELF]->() DELETE r", id=iid)
+    return {"insight_id": iid}
