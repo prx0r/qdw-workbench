@@ -1,7 +1,11 @@
-"""Module status API — HTTP endpoints for modules to report to Private Lab.
+"""Lab API — canonical control API for Private Lab.
 
-This is the contract interface. Modules call these endpoints to report
-their status, and Private Lab uses the responses to make allocation decisions.
+Endpoints for:
+    - runs (CRUD)
+    - workers (identity + versions)
+    - experiments (lifecycle)
+    - ledger (verification)
+    - hydra (projector rebuild)
 """
 from __future__ import annotations
 import json
@@ -19,7 +23,7 @@ class ContextRequest(BaseModel):
     pool_ids: list[str]
     total_tokens: int = 8000
 
-app = FastAPI(title="Private Lab API", version="0.1.0")
+app = FastAPI(title="Private Lab API", version="1.0.0")
 controller = LabController()
 registry = ModuleRegistry()
 
@@ -28,6 +32,8 @@ registry = ModuleRegistry()
 def health():
     return {"status": "ok", "modules": len(registry.list_modules())}
 
+
+# ─── Modules ──────────────────────────────────────────────────────────
 
 @app.post("/v1/modules/status")
 def report_module_status(status: ModuleStatus):
@@ -69,6 +75,148 @@ def get_program(program_id: str):
     raise HTTPException(status_code=404, detail=f"Program {program_id} not found")
 
 
+# ─── Runs ─────────────────────────────────────────────────────────────
+
+@app.get("/v1/runs")
+def list_runs():
+    """List all runs from the ledger."""
+    from lab.ledger import Ledger
+    ledger = Ledger()
+    events = ledger.get_events_by_type("run.created", limit=100)
+    runs = []
+    for e in events:
+        payload = json.loads(e["payload_json"])
+        runs.append(payload)
+    return {"runs": runs}
+
+
+@app.get("/v1/runs/{run_id}")
+def get_run(run_id: str):
+    """Get a run's full history from the ledger."""
+    from lab.ledger import Ledger
+    ledger = Ledger()
+    events = ledger.get_entity_history(run_id)
+    if not events:
+        raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
+    return {"run_id": run_id, "events": [json.loads(e["payload_json"]) for e in events]}
+
+
+# ─── Workers ──────────────────────────────────────────────────────────
+
+@app.get("/v1/workers")
+def list_workers():
+    """List all workers from the ledger."""
+    from lab.ledger import Ledger
+    ledger = Ledger()
+    events = ledger.get_events_by_type("worker.created", limit=100)
+    workers = []
+    for e in events:
+        payload = json.loads(e["payload_json"])
+        workers.append(payload)
+    return {"workers": workers}
+
+
+@app.get("/v1/workers/{worker_id}")
+def get_worker(worker_id: str):
+    """Get a worker's version history."""
+    from lab.ledger import Ledger
+    from lab.artifacts import ArtifactStore
+    from lab.workers import WorkerRegistry
+    ledger = Ledger()
+    artifacts = ArtifactStore()
+    registry = WorkerRegistry(ledger, artifacts)
+    history = registry.get_worker_history(worker_id)
+    latest = registry.get_latest_version(worker_id)
+    return {
+        "worker_id": worker_id,
+        "versions": history,
+        "latest": latest,
+    }
+
+
+@app.get("/v1/workers/{worker_id}/versions")
+def list_worker_versions(worker_id: str):
+    """List all versions for a worker."""
+    from lab.ledger import Ledger
+    from lab.artifacts import ArtifactStore
+    from lab.workers import WorkerRegistry
+    ledger = Ledger()
+    artifacts = ArtifactStore()
+    registry = WorkerRegistry(ledger, artifacts)
+    return {"worker_id": worker_id, "versions": registry.get_worker_history(worker_id)}
+
+
+# ─── Experiments ──────────────────────────────────────────────────────
+
+@app.get("/v1/experiments")
+def list_experiments():
+    """List all experiments from the ledger."""
+    from lab.ledger import Ledger
+    ledger = Ledger()
+    events = ledger.get_events_by_type("experiment.created", limit=100)
+    experiments = []
+    for e in events:
+        payload = json.loads(e["payload_json"])
+        experiments.append(payload)
+    return {"experiments": experiments}
+
+
+@app.get("/v1/experiments/{experiment_id}")
+def get_experiment(experiment_id: str):
+    """Get an experiment's full history."""
+    from lab.ledger import Ledger
+    ledger = Ledger()
+    events = ledger.get_entity_history(experiment_id)
+    if not events:
+        raise HTTPException(status_code=404, detail=f"Experiment {experiment_id} not found")
+    return {
+        "experiment_id": experiment_id,
+        "events": [json.loads(e["payload_json"]) for e in events],
+    }
+
+
+# ─── Ledger ───────────────────────────────────────────────────────────
+
+@app.get("/v1/ledger/verify")
+def verify_ledger():
+    """Verify the entire ledger chain integrity."""
+    from lab.ledger import Ledger
+    ledger = Ledger()
+    return ledger.verify_chain()
+
+
+@app.get("/v1/ledger/summary")
+def ledger_summary():
+    """Get ledger summary."""
+    from lab.ledger import Ledger
+    ledger = Ledger()
+    return ledger.summary()
+
+
+# ─── Hydra Projector ──────────────────────────────────────────────────
+
+@app.post("/v1/projectors/hydra/rebuild")
+def rebuild_hydra():
+    """Delete Hydra graph and rebuild from ledger."""
+    from lab.ledger import Ledger
+    from lab.projection import HydraProjector
+    ledger = Ledger()
+    projector = HydraProjector(ledger)
+    return projector.rebuild()
+
+
+@app.get("/v1/projectors/hydra/verify")
+def verify_hydra():
+    """Verify Hydra graph matches ledger state."""
+    from lab.ledger import Ledger
+    from lab.projection import HydraProjector
+    ledger = Ledger()
+    projector = HydraProjector(ledger)
+    return projector.verify()
+
+
+# ─── Pools & Matching ────────────────────────────────────────────────
+
 @app.post("/v1/match")
 def match_opportunity(demand: CapabilityDemand):
     """Match a capability demand to relevant pools."""
@@ -96,7 +244,7 @@ def allocate(opportunity_id: str, module_id: str = "", worker_id: str = "", budg
 @app.post("/v1/dispatch")
 def dispatch(decision_id: str, opportunity_id: str, module_id: str = ""):
     """Dispatch work to a module."""
-    from lab.modules import AllocationDecision, PoolMatch
+    from lab.modules import AllocationDecision
     decision = AllocationDecision(
         decision_id=decision_id,
         opportunity_id=opportunity_id,
