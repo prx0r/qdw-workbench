@@ -193,13 +193,14 @@ pub async fn hydra_summary()->Result<Value,String>{
 pub async fn hydra_query(query:String)->Result<Value,String>{
     let script=std::env::var("LAB_DIR").unwrap_or_else(|_|"/root/private-lab".into());
     let input=serde_json::json!({"query":query}).to_string();
-    let child=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py"))
+    let mut child=Command::new("python3").arg(format!("{script}/scripts/hydra_query.py"))
         .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped())
         .spawn().map_err(e)?;
     // Write input to stdin
-    if let Some(mut stdin)=child.stdin{
+    if let Some(mut stdin)=child.stdin.take(){
         use tokio::io::AsyncWriteExt;
         stdin.write_all(input.as_bytes()).await.map_err(e)?;
+        drop(stdin);
     }
     // Wait for output
     let result=child.wait_with_output().await.map_err(e)?;

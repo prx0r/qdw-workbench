@@ -77,7 +77,7 @@ impl PtyRegistry {
             .context("failed to get PTY writer")?;
         let reader = pair
             .master
-            .take_reader()
+            .try_clone_reader()
             .context("failed to get PTY reader")?;
 
         let session_id = uuid::Uuid::now_v7().to_string();
@@ -122,8 +122,7 @@ impl PtyRegistry {
         let mut output = String::new();
         let mut total = 0;
 
-        // Non-blocking read with timeout
-        session.reader.set_read_timeout(Some(Duration::from_millis(50))).ok();
+        // Non-blocking read
         loop {
             match session.reader.read(&mut buf) {
                 Ok(n) => {

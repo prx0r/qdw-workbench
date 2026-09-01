@@ -40,22 +40,24 @@ def detect_transfers(pool_id: str | None = None) -> list[dict]:
 
 
 def detect_cross_pool_transfers() -> list[dict]:
-    """Find findings that transfer knowledge between different pools.
-
-    This is the strongest evidence of generalizable capability.
-    """
+    """Find findings that transfer knowledge between different pools."""
     client = get_client()
-
-    # Find findings that exist in multiple pools
-    results = client.run(
+    # HydraDB doesn't support WITH aggregation, so get all findings and filter in Python
+    all_findings = client.run(
         "MATCH (f:Finding)-[:APPLIES_TO]->(pool:CapabilityPool) "
-        "WITH f, collect(pool.name) AS pools "
-        "WHERE size(pools) > 1 "
         "RETURN f.claim AS claim, f.tier AS tier, f.confidence AS confidence, "
-        "pools"
+        "pool.name AS pool"
     )
-
-    return results
+    # Group by claim and find claims in multiple pools
+    by_claim: dict[str, list[dict]] = {}
+    for r in all_findings:
+        claim = r["claim"]
+        if claim not in by_claim:
+            by_claim[claim] = []
+        by_claim[claim].append(r)
+    return [{"claim": c, "pools": list(set(r["pool"] for r in records)),
+             "tier": records[0]["tier"]}
+            for c, records in by_claim.items() if len(set(r["pool"] for r in records)) > 1]
 
 
 def get_transfer_stats() -> dict:
@@ -65,31 +67,28 @@ def get_transfer_stats() -> dict:
     # Count transfers by tier
     tier_counts = client.run(
         "MATCH (f:Finding)-[:APPLIES_TO]->(pool:CapabilityPool) "
-        "WHERE f.tier = 'TRANSFER_CLAIM' OR f.tier = 'DOCTRINE' "
-        "RETURN f.tier AS tier, count(*) AS count"
+        "RETURN f.tier AS tier, f.claim AS claim, pool.name AS pool"
     )
 
-    # Count cross-pool transfers
-    cross_pool = client.run(
-        "MATCH (f:Finding)-[:APPLIES_TO]->(pool:CapabilityPool) "
-        "WITH f, collect(pool.name) AS pools "
-        "WHERE size(pools) > 1 "
-        "RETURN count(*) AS count"
-    )
+    # Aggregate in Python
+    tier_agg: dict[str, int] = {}
+    claims_by_pool: dict[str, set] = {}
+    for r in tier_counts:
+        tier = r["tier"]
+        tier_agg[tier] = tier_agg.get(tier, 0) + 1
+        claim = r["claim"]
+        if claim not in claims_by_pool:
+            claims_by_pool[claim] = set()
+        claims_by_pool[claim].add(r["pool"])
 
-    # Count total findings
-    total = client.run(
-        "MATCH (f:Finding)-[:APPLIES_TO]->(pool:CapabilityPool) "
-        "RETURN count(*) AS count"
-    )
+    cross_pool = sum(1 for pools in claims_by_pool.values() if len(pools) > 1)
+    total = len(claims_by_pool)
 
     return {
-        "total_findings": total[0]["count"] if total else 0,
-        "transfers_by_tier": {r["tier"]: r["count"] for r in tier_counts},
-        "cross_pool_transfers": cross_pool[0]["count"] if cross_pool else 0,
-        "transfer_rate": (
-            cross_pool[0]["count"] / max(1, total[0]["count"]) if total else 0
-        ),
+        "total_findings": total,
+        "transfers_by_tier": tier_agg,
+        "cross_pool_transfers": cross_pool,
+        "transfer_rate": cross_pool / max(1, total),
     }
 
 

@@ -141,7 +141,7 @@ def compile_context(
 
 def _get_pool_doctrine(pool_id: str, max_tokens: int) -> str:
     """Get doctrine text from pool files."""
-    doctrine_path = Path(__file__).parent.parent.parent / "pools" / pool_id / "doctrine"
+    doctrine_path = Path(__file__).parent.parent / "pools" / pool_id / "doctrine"
     if not doctrine_path.exists():
         return ""
     texts = []
@@ -169,7 +169,7 @@ def _get_pool_findings(pool_id: str, demand: CapabilityDemand, max_items: int) -
 
 def _get_pool_skills(pool_id: str, demand: CapabilityDemand, max_items: int) -> list[dict]:
     """Get promoted skills from pool."""
-    skill_path = Path(__file__).parent.parent.parent / "pools" / pool_id / "skills"
+    skill_path = Path(__file__).parent.parent / "pools" / pool_id / "skills"
     if not skill_path.exists():
         return []
     skills = []

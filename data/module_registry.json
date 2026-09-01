@@ -1,0 +1,123 @@
+{
+  "bitt": {
+    "module_id": "bitt",
+    "module_name": "Bittensor",
+    "programs": [
+      {
+        "program_id": "bittensor/sn64",
+        "name": "Chutes",
+        "state": "DISCOVERED",
+        "capability_demand": {},
+        "our_performance": {
+          "score": 0.0,
+          "rank": 0,
+          "delta": 0.0,
+          "runs": 0,
+          "wins": 0,
+          "cost_usd": 0.0,
+          "revenue_usd": 0.0
+        },
+        "possible_actions": [
+          "train",
+          "submit",
+          "hold"
+        ],
+        "estimated_costs": {},
+        "estimated_rewards": {},
+        "metadata": {
+          "registration_cost_tao": 0
+        }
+      },
+      {
+        "program_id": "bittensor/sn11",
+        "name": "Trajectoryrl",
+        "state": "DISCOVERED",
+        "capability_demand": {},
+        "our_performance": {
+          "score": 0.0,
+          "rank": 0,
+          "delta": 0.0,
+          "runs": 0,
+          "wins": 0,
+          "cost_usd": 0.0,
+          "revenue_usd": 0.0
+        },
+        "possible_actions": [
+          "train",
+          "submit",
+          "hold"
+        ],
+        "estimated_costs": {},
+        "estimated_rewards": {},
+        "metadata": {
+          "registration_cost_tao": 0
+        }
+      },
+      {
+        "program_id": "bittensor/sn61",
+        "name": "Redteam",
+        "state": "REPRODUCING",
+        "capability_demand": {
+          "security": 0.8,
+          "adversarial": 0.9,
+          "red_team": 0.85
+        },
+        "our_performance": {
+          "score": 0.0,
+          "rank": 0,
+          "delta": 0.0,
+          "runs": 0,
+          "wins": 0,
+          "cost_usd": 0.0,
+          "revenue_usd": 0.0
+        },
+        "possible_actions": [
+          "train",
+          "submit",
+          "hold"
+        ],
+        "estimated_costs": {},
+        "estimated_rewards": {},
+        "metadata": {
+          "registration_cost_tao": 0
+        }
+      },
+      {
+        "program_id": "bittensor/sn60",
+        "name": "Bitsec",
+        "state": "LIVE_COMPETE",
+        "capability_demand": {
+          "security": 0.99,
+          "smart_contract": 0.94,
+          "vulnerability_detection": 0.98
+        },
+        "our_performance": {
+          "score": 0.0,
+          "rank": 0,
+          "delta": 0.0,
+          "runs": 0,
+          "wins": 0,
+          "cost_usd": 0.0,
+          "revenue_usd": 0.0
+        },
+        "possible_actions": [
+          "train",
+          "submit",
+          "hold"
+        ],
+        "estimated_costs": {},
+        "estimated_rewards": {},
+        "metadata": {
+          "registration_cost_tao": 0
+        }
+      }
+    ],
+    "total_cost_usd": 0.0,
+    "total_revenue_usd": 0.0,
+    "worker_versions": [],
+    "metadata": {
+      "recent_captures": 0,
+      "latest_block": 0
+    }
+  }
+}

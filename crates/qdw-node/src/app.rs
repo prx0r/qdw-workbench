@@ -98,8 +98,8 @@ async fn prompt_session(State(s):State<Shared>,Path(id):Path<String>,Json(req):J
         cwd:std::path::PathBuf::from(&session.workspace),
     };
 
-    // Execute prompt via ACP
-    let response=qdw_acp_host::session_prompt(spec,req.prompt).await.map_err(|e|ApiError(e))?;
+    // Execute prompt via ACP (use one-shot for now)
+    let response=qdw_acp_host::one_shot(spec,req.prompt).await.map_err(|e|ApiError(e))?;
 
     Ok(Json(serde_json::json!({
         "session_id":id,
