@@ -167,6 +167,72 @@ get_pool_findings('security')     # all findings in pool
 get_transferred_findings()        # findings that crossed venues
 ```
 
+## Module Architecture
+
+Modules own their ecosystems. Private Lab receives standardized status.
+
+```
+                    PRIVATE LAB
+                         │
+         ┌───────────────┼────────────────┐
+         │               │                │
+         ▼               ▼                ▼
+     MarketOracle       /bitt         future modules
+         │               │
+ external jobs       internal oracle
+         │               │
+         │          Bitsec campaign
+         │               │
+         └──────┬────────┘
+                ▼
+          POOL MATCHER
+                │
+           Security Pool
+                │
+                ▼
+          Lab intelligence
+```
+
+### Three Granularity Levels
+
+| Level | Example | Who owns it |
+|-------|---------|-------------|
+| **Program** | Bitsec SN60 | Module (`/bitt`) |
+| **Campaign** | Bitsec Round 42 with worker v17 | Module + Private Lab |
+| **Run** | One local SCA-Bench evaluation | MWGym/WorkerKit/Hydra |
+
+### Module Contract
+
+Modules report status via `POST /v1/modules/status`:
+
+```python
+from lab.modules import ModuleStatus, ModuleProgram
+
+status = ModuleStatus(
+    module_id="bitt",
+    module_name="Bittensor",
+    programs=[ModuleProgram(
+        program_id="bittensor/sn60",
+        name="Bitsec",
+        state="LIVE_COMPETE",
+        capability_demand={"security": 0.99, "smart_contract": 0.94},
+    )]
+)
+```
+
+### Lab Controller
+
+```python
+from lab.controller import LabController
+
+controller = LabController()
+controller.ingest_module_status(bitt_status)
+match = controller.ingest_opportunity(immunefi_bounty)
+decision = controller.allocate(match.opportunity_id, module_id="bitt")
+assignment = controller.dispatch(decision)
+controller.record_outcome(decision.decision_id, outcome)
+```
+
 ## The Three Layers
 
 ### 1. Public Web (oracle.moltwork.com)
