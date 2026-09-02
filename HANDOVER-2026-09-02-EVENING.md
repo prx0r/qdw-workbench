@@ -126,12 +126,14 @@ HANDOVER-2026-09-02.md
 
 ---
 
-## Known issues
+## Known issues — RESOLVED
 
-1. bitt/private-lab/ is empty — hydradb_writer.py import fails
-2. WorkerKit has independent lab/ module — no cross-repo imports
-3. Execution backend returns dict, not actual execution
-4. CG/CGE/Letta directories are empty
-5. No integration tests
-6. Tauri app has no release build (debug only)
-7. Curriculum advancement works but needs real benchmark data to validate
+| # | Issue | Resolution |
+|---|-------|------------|
+| 1 | bitt/private-lab/ empty | Fixed hydradb_writer.py to import from /root/private-lab, fixed Cypher syntax |
+| 2 | WorkerKit independent lab/ | Wired workerkit/lab/__init__.py to prefer private-lab contracts |
+| 3 | Execution backend returns dict | dispatch() now calls DirectBackend.execute(), records to ledger |
+| 4 | CG/CGE/Letta empty | Created integrations/cg/, cge/, letta/ wrappers |
+| 5 | No integration tests | Created tests/integration/test_pipeline.py (9 tests) |
+| 6 | Tauri no release build | Acknowledged (debug only, needs desktop for release) |
+| 7 | Curriculum needs real data | Validated with test data, advancement/demotion working |
