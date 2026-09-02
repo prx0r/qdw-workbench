@@ -11,3 +11,4 @@ vendor/
 .qdw/
 apps/desktop/src-tauri/gen/
 apps/desktop/web/dist/
+data/artifacts/

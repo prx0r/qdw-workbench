@@ -123,6 +123,25 @@ class HydraProjector:
             hypothesis=payload.get("reason", "promoted"),
         )
 
+    def project_intelligence_import(self, event: dict):
+        """Project intelligence import — recreate nodes from event payload.
+
+        The event payload contains the node_properties list from the original import.
+        """
+        payload = json.loads(event["payload_json"])
+        nodes = payload.get("node_properties", [])
+        label = payload.get("node_label", "ExternalTechnique")
+        for node in nodes:
+            p_str = ", ".join(f"{k}: ${k}" for k in node)
+            self.hydra.run_write(
+                f"CREATE (n:{label} {{{p_str}}})-[:_SELF]->(n2:{label} {{id: $id}})",
+                **node
+            )
+            self.hydra.run_write(
+                f"MATCH (n:{label} {{id: $id}})-[r:_SELF]->() DELETE r",
+                id=node["id"]
+            )
+
     # ─── Dispatch table ───────────────────────────────────────────────
 
     EVENT_PROJECTORS = {
@@ -133,6 +152,7 @@ class HydraProjector:
         "finding.created": "project_finding_created",
         "evaluation.completed": "project_evaluation_completed",
         "promotion.created": "project_promotion",
+        "intelligence.import_completed": "project_intelligence_import",
     }
 
     def project_event(self, event: dict) -> bool:

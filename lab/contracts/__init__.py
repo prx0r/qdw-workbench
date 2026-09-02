@@ -463,3 +463,123 @@ class ModuleStatus(MutableModel):
     total_revenue_usd: float = 0.0
     worker_versions: list[str] = Field(default_factory=list)
     metadata: dict = Field(default_factory=dict)
+
+
+# ─── External Intelligence ────────────────────────────────────────────
+# These are NEVER canonical evidence. They are prior intelligence.
+# ExternalTrajectory ≠ RunReceipt. Never mutate one into the other.
+
+class ExternalSource(FrozenModel):
+    """Provenance for an external intelligence source."""
+    source_id: str
+    source_name: str
+    source_uri: str = ""
+    upstream_commit: str = ""
+    license: str = ""
+    retrieved_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    trust_level: str = "external_prior"
+    description: str = ""
+
+
+class ExternalArtifact(FrozenModel):
+    """A single artifact from an external source, with full provenance."""
+    artifact_id: str
+    source_id: str
+    artifact_type: str = ""  # trajectory, writeup, taxonomy, skill, benchmark_result
+    content_hash: str = ""
+    task_family: str = ""
+    task_id: str = ""
+    benchmark_id: str = ""
+    license: str = ""
+    trust_level: str = "external_prior"
+    metadata: dict = Field(default_factory=dict)
+
+
+class ExternalTrajectory(FrozenModel):
+    """An external trajectory — another system's execution trace.
+
+    NON-NEGOCIABLE SEPARATION:
+    ExternalTrajectory means "another system claims this under documented provenance."
+    RunReceipt means "our worker performed this under our controlled execution contract."
+    Never mutate one into the other.
+    """
+    trajectory_id: str
+    source_id: str
+    agent_name: str = ""
+    model: str = ""
+    scaffold: str = ""
+    tools: list[str] = Field(default_factory=list)
+    synthetic: bool = False
+    human_authored: bool = False
+    executed: bool = False
+    verified: bool = False
+    task_family: str = ""
+    task_id: str = ""
+    outcome: str = ""  # success, failure, partial
+    score: float = 0.0
+    tokens_used: int = 0
+    cost_usd: float = 0.0
+    wall_time_ms: int = 0
+    tool_calls: list[dict] = Field(default_factory=list)
+    events: list[dict] = Field(default_factory=list)
+    contamination_tags: list[str] = Field(default_factory=list)
+    license: str = ""
+    content_hash: str = ""
+    metadata: dict = Field(default_factory=dict)
+
+
+class ExternalEpisode(FrozenModel):
+    """A single episode within an external trajectory."""
+    episode_id: str
+    trajectory_id: str
+    turn: int = 0
+    observation: str = ""
+    hypothesis: str = ""
+    decision: str = ""
+    tool_selected: str = ""
+    tool_result: str = ""
+    pivot: bool = False
+    validation: str = ""
+    outcome: str = ""
+    tokens: int = 0
+
+
+class ExternalFinding(FrozenModel):
+    """A vulnerability finding from an external source."""
+    finding_id: str
+    source_id: str
+    title: str = ""
+    severity: str = ""
+    category: str = ""
+    description: str = ""
+    impact: str = ""
+    exploit_path: str = ""
+    recommendation: str = ""
+    location: str = ""
+    verified: bool = False
+
+
+class ExternalTechnique(FrozenModel):
+    """A security technique/pattern from external knowledge."""
+    technique_id: str
+    source_id: str
+    name: str = ""
+    description: str = ""
+    category: str = ""  # recon, exploitation, defense, analysis
+    attack_surface: str = ""  # web, sca, agent, mcp, browser
+    applicability: list[str] = Field(default_factory=list)
+    references: list[str] = Field(default_factory=list)
+    trust_level: str = "external_knowledge"
+
+
+class ExternalBenchmarkResult(FrozenModel):
+    """A benchmark result from an external evaluation."""
+    result_id: str
+    source_id: str
+    benchmark_id: str = ""
+    agent_name: str = ""
+    model: str = ""
+    score: float = 0.0
+    metric: str = ""
+    details: dict = Field(default_factory=list)
+    provenance: str = ""
