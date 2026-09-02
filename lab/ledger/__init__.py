@@ -327,3 +327,40 @@ class Ledger:
             }
         finally:
             conn.close()
+
+    # ─── Merkle Root ──────────────────────────────────────────────────
+
+    def compute_trajectory_merkle_root(self, entity_id: str) -> str:
+        """Compute Merkle root over all events for an entity.
+
+        This commits to the complete trajectory of a run/worker/experiment.
+        The root is deterministic: same events → same root always.
+        Used in RunReceipt to tie trajectory integrity to the receipt.
+        """
+        events = self.get_entity_history(entity_id)
+        if not events:
+            return hashlib.sha256(b"").hexdigest()
+
+        # Build Merkle tree from event hashes
+        hashes = []
+        for e in events:
+            h = e.get("event_hash", "")
+            if not h:
+                h = _hash_event({k: v for k, v in e.items() if k != "event_hash"})
+            hashes.append(h.encode())
+
+        # Simple Merkle: hash pairs up the tree
+        while len(hashes) > 1:
+            next_level = []
+            for i in range(0, len(hashes), 2):
+                left = hashes[i]
+                right = hashes[i + 1] if i + 1 < len(hashes) else hashes[i]
+                combined = hashlib.sha256(left + right).digest()
+                next_level.append(combined)
+            hashes = next_level
+
+        return hashlib.sha256(hashes[0]).hexdigest()
+
+    def get_trajectory_events(self, entity_id: str) -> list[dict]:
+        """Get ordered events for trajectory replay."""
+        return self.get_entity_history(entity_id)

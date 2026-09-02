@@ -119,5 +119,36 @@
       "recent_captures": 0,
       "latest_block": 0
     }
+  },
+  "test": {
+    "module_id": "test",
+    "module_name": "Test Module",
+    "programs": [
+      {
+        "program_id": "test/p1",
+        "name": "Test Program",
+        "state": "DISCOVERED",
+        "capability_demand": {
+          "security": 0.9
+        },
+        "our_performance": {
+          "score": 0.0,
+          "rank": 0,
+          "delta": 0.0,
+          "runs": 0,
+          "wins": 0,
+          "cost_usd": 0.0,
+          "revenue_usd": 0.0
+        },
+        "possible_actions": [],
+        "estimated_costs": {},
+        "estimated_rewards": {},
+        "metadata": {}
+      }
+    ],
+    "total_cost_usd": 0.0,
+    "total_revenue_usd": 0.0,
+    "worker_versions": [],
+    "metadata": {}
   }
 }
