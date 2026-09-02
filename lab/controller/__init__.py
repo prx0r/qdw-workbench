@@ -95,20 +95,69 @@ class LabController:
         return decision
 
     def dispatch(self, decision: AllocationDecision) -> dict:
-        """Dispatch work to a module."""
+        """Dispatch work to a module via real ExecutionBackend."""
+        from lab.execution import DirectBackend
+        from lab.ledger import Ledger
+        from lab.artifacts import ArtifactStore
+        from lab.contracts import RunSpec, BudgetEnvelope, Split
+
         context = compile_context(
             pool_matches=decision.selected_pools,
             demand=CapabilityDemand(),
             total_tokens=8000,
         )
+
+        # Build RunSpec
+        run_id = f"run-{decision.decision_id}"
+        run_spec = RunSpec(
+            run_id=run_id,
+            lab_id="private-lab",
+            studio_id=decision.module_id or "unknown",
+            task_instance_id=decision.opportunity_id,
+            split=Split.TRAIN,
+            worker_id=decision.worker_id or "default-worker",
+            worker_version_id=f"{decision.worker_id}/v0",
+        )
+        budget = BudgetEnvelope(
+            envelope_id=f"budget-{decision.decision_id}",
+            cash_usd=decision.cost_usd,
+            wall_seconds=60,
+        )
+
+        # Execute via DirectBackend (safe, no external dependencies)
+        ledger = Ledger()
+        artifacts = ArtifactStore()
+        backend = DirectBackend(ledger, artifacts)
+        result = backend.execute(run_spec, budget, context)
+
+        # Record to ledger
+        self.ledger.append_event(
+            event_type="run.created",
+            entity_id=run_id,
+            payload={
+                "run_id": run_id,
+                "decision_id": decision.decision_id,
+                "opportunity_id": decision.opportunity_id,
+                "module_id": decision.module_id,
+                "worker_version": run_spec.worker_version_id,
+                "outcome": "executed",
+            },
+        )
+
         return {
             "decision_id": decision.decision_id,
+            "run_id": run_id,
             "opportunity_id": decision.opportunity_id,
             "module_id": decision.module_id,
-            "worker_version": decision.worker_id,
+            "worker_version": run_spec.worker_version_id,
             "context_pack": context,
             "action": decision.action,
             "budget_usd": decision.cost_usd,
+            "execution": {
+                "success": result["success"],
+                "artifacts": [a.artifact_id for a in result["artifacts"]],
+                "duration_ms": result["duration_ms"],
+            },
         }
 
     def record_outcome(self, decision_id: str, outcome: dict):
