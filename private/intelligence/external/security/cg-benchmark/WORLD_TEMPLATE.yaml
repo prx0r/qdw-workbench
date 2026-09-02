@@ -1,0 +1,52 @@
+worldpack:
+  name: example-security-benchmark
+  version: "0.1.0"
+  upstream:
+    repository: "<benchmark repository>"
+    commit: "<pinned commit>"
+    artifact_digest: "<container/source digest>"
+  authorization:
+    mode: "purpose-built-benchmark"
+    external_targets_allowed: false
+  reset:
+    deterministic: true
+    seed_required: true
+  worker_interface:
+    observations:
+      - id: initial_context
+        schema: "<typed schema>"
+      - id: benchmark_observation
+        schema: "<typed schema>"
+    actions:
+      - id: benchmark_action
+        schema: "<typed schema>"
+  evaluation:
+    authoritative_adapter: "<source evaluator adapter>"
+    hidden_truth_schema: "<evaluator-only schema>"
+    worker_can_read_hidden_truth: false
+  variants:
+    generator: "<controlled perturbation generator>"
+    dev_seeds: []
+    validation_seeds: []
+    secret_seeds: "sealed"
+  budgets:
+    max_steps: 0
+    max_tool_calls: 0
+    max_tokens: 0
+  metrics:
+    - task_score
+    - reconstruction_fidelity
+    - calibration
+    - information_efficiency
+    - planning_efficiency
+    - transfer
+    - reproducibility
+    - cost
+    - latency
+    - invalid_action_rate
+  evidence:
+    append_only_events: true
+    event_merkle_root: true
+    run_receipt_required: true
+    immutable_worker_version: true
+    immutable_assessor_version: true
